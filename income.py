@@ -89,10 +89,13 @@ print('')
 
 for c in client_list:
     for a in c.accounts:
+        a.update_value()
         a.t.sort(key=lambda x: x.d, reverse=True)
         # loop through transaction
-        if(abs(a.low_cash()) > 0 and a.sc / abs(a.low_cash()) < 1 and abs(a.low_cash()) < 3000):
-            print( '(' + c.a + ') ' + c.sn + ', ' + c.fn + ': Previous Income = ' + str(abs(a.low_cash())) + ' || SIPP Cash Account = ' + str(a.sc) + ' || F&S Cash: ' + str(a.fc))
+        if(abs(a.low_cash()) > 0 and a.sc / abs(a.low_cash()) < 1 and abs(a.low_cash()) < 3000 and a.p.strip() == 'Investcentre SIPP'):
+            print('(' + c.a + ') ' + c.sn + ', ' + c.fn + ' <' + a.p.strip() + '>: Previous Income = ' + str(abs(a.low_cash())) + ' || SIPP Cash Account = ' + str(a.sc) + ' || F&S Cash: ' + str(a.fc))
+        if(abs(a.low_cash()) > 0 and a.fc / abs(a.low_cash()) < 1 and abs(a.low_cash()) < 3000 and not a.p.strip() == 'Investcentre SIPP'):
+            print('(' + c.a + ') ' + c.sn + ', ' + c.fn + ' <' + a.p.strip() + '>: Previous Income = ' + str(abs(a.low_cash())) + ' || F&S Cash: ' + str(a.fc))
             # print(c.sn + ', ' + c.fn + ': ' + str(a.c / abs(a.low_cash())))
 
         # find first income payment
