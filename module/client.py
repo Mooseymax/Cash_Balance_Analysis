@@ -1,7 +1,7 @@
 from datetime import datetime
 
 class Client:
-    def __init__(self, a_ref, adviser, c_ref, first_name, surname):
+    def __init__(self, a_ref, adviser, c_ref, first_name, surname, val):
         # Logic for having accounts
         self.has_sipp = False
         self.has_isa = False
@@ -17,6 +17,7 @@ class Client:
         
         # Additional details
         self.accounts = []
+        self.add_fund(val)
     
     def details(self):
         print('Client: ' + self.fn + ' ' + self.sn)
@@ -43,12 +44,15 @@ class Client:
             # Account not found - adding an account
             self.accounts.append(Account(valuation[14], valuation[5], valuation[2],
                                 valuation))
-            print(self.fn + ' ' + self.sn + ' - New Account Added: ' + valuation[5]) 
+            #print(self.fn + ' ' + self.sn + ' - New Account Added: ' + valuation[5]) 
                
     def add_transaction(self, transaction):
         existing_account = False
         
+        # print(transaction.p)
+        
         for a in self.accounts:
+            #print(transaction.p + ' || ' + a.p)
             if(transaction.p == a.p):
                 # Account found
                 a.t.append(transaction)
@@ -61,14 +65,17 @@ class Client:
                 pass
         
         if(existing_account == False):
+            print(self.fn + ' ' + self.sn)
+            print(transaction.p)
             print('Account not found - error')
-            input('')
+            #input('')
 
 class Transaction:
     def __init__(self, product, date, desc, name, source, amount, quantity, isin, sedol):
         self.p = product
+        # print(str(date).split(' ')[0])
         try:
-            self.d = datetime.strptime(date, '%d/%m/%Y')
+            self.d = datetime.strptime(str(date).split(' ')[0], '%d/%m/%Y')
         except:
             self.d = date
         self.des = desc
@@ -101,23 +108,43 @@ class Account:
         
         self.f = []
         self.t = []
-        self.i = transaction
+        self.i = transaction    # Initial transaction (valuation)
         self.v = 0  # value
-        self.c = 0  # cash
+        self.sc = 0  # cash
+        self.fc = 0 # Funds cash
         
         self.new_fund(Transaction(transaction[5], datetime.today(), 'Initial', 
                         transaction[7], transaction[6], transaction[13],
                         transaction[12], transaction[9], transaction[8]))
+        
+        self.update_value()
+        
+    def low_cash(self):
+        income = 0
+        for t in self.t:
+            if(t.des == 'Income Payment' or t.des == 'Withdrawal'):
+                income = t.a
+                break
+            else:
+                pass
+        return income
         
     def update_value(self):
         CASH = 'Investcentre SIPP Cash Account'
         CASH_B = 'Cash GBP'
     
         self.v = 0
+        self.sc = 0
+        self.fc = 0
+        
         for i in self.f:
             self.v += i.v
-            if(i.n.strip() == CASH or i.n.strip() == CASH_B):
-                self.c += i.v
+            
+            if(i.n.strip() == CASH):
+                self.sc += i.v
+            
+            if(i.n.strip() == CASH_B):
+                self.fc += i.v
     
     def new_fund(self, valuation):
         GIA = 'Investcentre Dealing Account'
@@ -128,10 +155,10 @@ class Account:
         CASH = 'Investcentre SIPP Cash Account'
         CASH_B = 'Cash GBP'
         
-        if(valuation.n == CASH or valuation.n == CASH_B):
+        '''if(valuation.n == CASH or valuation.n == CASH_B):
             self.c += valuation.a
         self.v += valuation.a
-        
+        '''
         self.t.append(valuation)
         self.f.append(Fund(self.i[7], self.i[8], self.i[9], self.i[10],
                             self.i[11], self.i[12], self.i[13], self.i[14]))
