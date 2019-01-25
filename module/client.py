@@ -38,7 +38,7 @@ class Client:
             else:
                 # Account not found, pass for now
                 pass
-            a.update_value()
+            #a.update_value()
             
         if(existing_account == False):
             # Account not found - adding an account
@@ -117,7 +117,7 @@ class Account:
                         transaction[7], transaction[6], transaction[13],
                         transaction[12], transaction[9], transaction[8]))
         
-        self.update_value()
+        #self.update_value()
         
     def low_cash(self):
         income = 0
@@ -162,6 +162,3 @@ class Account:
         self.t.append(valuation)
         self.f.append(Fund(self.i[7], self.i[8], self.i[9], self.i[10],
                             self.i[11], self.i[12], self.i[13], self.i[14]))
-        
-        
-        
