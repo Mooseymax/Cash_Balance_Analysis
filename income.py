@@ -35,10 +35,10 @@ def import_csv(file_name):
 
 client_list = []
 
-valuation = import_csv('test-v.csv')
+valuation = import_csv('v.csv')
 print('Clients imported.')
 
-transactions = import_csv('test-t.csv')
+transactions = import_csv('t.csv')
 print('Transactions imported.')
 
 for v in valuation[1:]:
@@ -57,17 +57,17 @@ for v in valuation[1:]:
     
     if(existing_client == False):
         # Create new client
-        client_list.append(Client(v[0], v[1], v[2], v[3], v[4]))
-        print('New client found: ' + v[3] + ' ' + v[4])
+        client_list.append(Client(v[0], v[1], v[2], v[3], v[4], v))
+        #print('New client found: ' + v[3] + ' ' + v[4])
 
 print('Total clients found: ' + str(len(client_list)))
 print('')
 
-client_list[0].details()
-
 for t in transactions[1:]:
     existing_client = False
     
+    ''' ISSUE HERE'''
+    #print(t[3] + str(t[12]))
     transaction = Transaction(t[5], t[6], t[9], t[10], t[11], t[12], t[13], t[21], t[22])
     
     for c in client_list:
@@ -79,8 +79,8 @@ for t in transactions[1:]:
             pass
             
     if(existing_client == False):
-        print('Transaction not found - error')
-        input('')
+        print(t[2] + ' - Transaction not found - possibly removed')
+        
 
 print('')
 print('Added transactions')
@@ -90,8 +90,11 @@ print('')
 for c in client_list:
     for a in c.accounts:
         a.t.sort(key=lambda x: x.d, reverse=True)
-        newest = a.t[0]
         # loop through transaction
+        if(abs(a.low_cash()) > 0 and a.sc / abs(a.low_cash()) < 1 and abs(a.low_cash()) < 3000):
+            print( '(' + c.a + ') ' + c.sn + ', ' + c.fn + ': Previous Income = ' + str(abs(a.low_cash())) + ' || SIPP Cash Account = ' + str(a.sc) + ' || F&S Cash: ' + str(a.fc))
+            # print(c.sn + ', ' + c.fn + ': ' + str(a.c / abs(a.low_cash())))
+
         # find first income payment
         # divide cash account by income
         # return how many
