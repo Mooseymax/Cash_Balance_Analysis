@@ -162,3 +162,4 @@ class Account:
         self.t.append(valuation)
         self.f.append(Fund(self.i[7], self.i[8], self.i[9], self.i[10],
                             self.i[11], self.i[12], self.i[13], self.i[14]))
+                
